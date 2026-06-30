@@ -4,7 +4,8 @@ This repository contains a lightweight, high-performance machine learning pipeli
 
 ## Submission Summary & Metrics
 
-* **Validation Accuracy:** 94.97%
+* **Validation Accuracy:**94.97% on our train/validation split. Since the final evaluation uses a separate hidden dataset, real-world performance may vary depending on unseen screen types, lighting conditions, and camera devices.
+
 * **5-Fold Cross-Validation Accuracy:** 94.70% (std: 1.29%)
 * **Latency:** ~330 ms per image (on a standard laptop CPU, single-threaded).
   * Note: Over 95% of this time is consumed by image loading and decompression in OpenCV for high-resolution input JPEGs. The actual feature extraction and ensemble classifier prediction takes less than 5 ms.
