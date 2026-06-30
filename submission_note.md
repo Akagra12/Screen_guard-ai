@@ -12,13 +12,13 @@ We implemented a **lightweight feature-engineering pipeline** combined with a **
 6. **Bezel/Line Detection:** Hough line counting to detect straight screen frame edges.
 
 ### Synthetic Data Augmentation:
-To address the small dataset size (322 original images), we generated **3 synthetic spoof images per real photo** by overlaying:
+To address the small dataset size (343 original images), we generated **3 synthetic spoof images per real photo** by overlaying:
 - Moiré interference patterns (sinusoidal grids at screen-pixel frequencies)
 - Color temperature shifts (blue/warm/greenish gamut simulation)
 - Refocus Gaussian blur and brightness attenuation
 - Non-linear gamma curve simulation
 
-This expanded the training set from **322 → 940 samples**, significantly improving generalization.
+This expanded the training set from **343 → 991 samples**, significantly improving generalization.
 
 ### Model Pipeline:
 - **Preprocessing:** StandardScaler → ANOVA F-value Feature Selector (`SelectKBest(k=80)`)
@@ -26,7 +26,7 @@ This expanded the training set from **322 → 940 samples**, significantly impro
   - SVM (RBF kernel, C=50, class-weight balanced) — weight 2
   - GradientBoosting (200 estimators, max_depth=4) — weight 2
   - RandomForest (300 estimators, class-weight balanced) — weight 1
-- **Final Fit:** Trained on the entire augmented 940-sample dataset for submission.
+- **Final Fit:** Trained on the entire augmented 991-sample dataset for submission.
 
 ---
 
