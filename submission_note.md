@@ -30,8 +30,8 @@ This expanded the training set from **343 → 991 samples**, significantly impro
 
 ---
 
-## 2. Accuracy (on Held-Out Validation Set)
-
+## 2. Internal Validation Results
+The following metrics were measured on an internal train/validation split of the available dataset. Since the final evaluation will be performed on a separate hidden dataset, actual performance may vary depending on unseen devices, lighting conditions, and screen types.
 | Metric | Value |
 |---|---|
 | **Validation Accuracy** | **94.97%** |
@@ -51,7 +51,10 @@ This expanded the training set from **343 → 991 samples**, significantly impro
 
 ## 3. Required Metrics (Inference & Cost)
 * **Latency:** **~330 ms** per image (on Laptop Intel CPU, single-threaded).
-  * *Note on Latency:* ~95% of this time is spent by OpenCV decoding the high-resolution (8–13 MP) input JPEG. The actual model inference (scaling, feature selection, ensemble voting) takes **less than 5 ms**. In production, pre-resizing images to 512×512 before saving would reduce total latency to **under 15 ms**.
+  * **Note on Latency:**Approximately 95% of the total execution time is spent decoding the original high-resolution (8–13 MP) JPEG image using OpenCV. Feature extraction, preprocessing, and ensemble prediction together require less than 5 ms. If images are resized to 512×512 before storage, the total latency is expected to **under 15 ms**.
+    
+* **Inference:** Fully deterministic and runs entirely offline. No network connection, external APIs, or cloud services are required during prediction.
+* **Model Size:** `detector_model.pkl` – **2.84 MB**
 * **Cost per Image:**
   * **On-device (local):** **$0** (runs free on client phone/laptop CPU).
   * **Cloud Server (Scale):** **~$2.75 per 1,000,000 images** (or **$0.00275 per 1,000 images**).
@@ -61,5 +64,17 @@ This expanded the training set from **343 → 991 samples**, significantly impro
 
 ## 4. Future Improvements (With More Time)
 1. **Pre-resize Pipeline:** Resize incoming images to 512×512 before feature extraction to cut latency from 330ms to <15ms.
-2. **Transfer Learning with ONNX:** Fine-tune a lightweight CNN (MobileNetV3-Small or EfficientNet-Lite) in PyTorch, export to ONNX, and run via `cv2.dnn.readNetFromONNX` for >98% accuracy with ~10ms inference.
+2. **Transfer Learning with ONNX:** Fine-tune a lightweight CNN (MobileNetV3-Small or EfficientNet-Lite) in PyTorch, export to ONNX, and run via `cv2.dnn.readNetFromONNX` has the potential to improve accuracy on larger datasets while maintaining low latency.
 3. **Larger & More Diverse Dataset:** Collect images across different screen types (LCD, OLED, E-ink), lighting conditions, and camera zoom levels for better real-world generalization.
+
+## 5. Design Trade-offs
+
+The primary goal was to build a lightweight, fast, and inexpensive solution that can run entirely on a standard CPU without requiring GPU acceleration or large deep-learning frameworks.
+Compared with CNN-based approaches, the selected handcrafted feature pipeline and soft-voting ensemble provide the following advantages:
+• Small model size
+• Zero inference cost on-device
+• Fast deployment
+• Easy reproducibility
+• No TensorFlow or PyTorch dependency during inference
+
+A lightweight CNN (e.g., MobileNetV3) would likely improve accuracy further but would increase training complexity, model size, and deployment requirements.
